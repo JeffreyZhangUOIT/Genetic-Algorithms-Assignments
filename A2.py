@@ -16,7 +16,9 @@ for i in range(100):
 for i in range(0, len(u)):
     NotDominated = True
     for j in range(0, len(u)):
-        if (u[i] < u[j]) and (v[i] < v[j]):
+        if (u[i] < u[j]) and (v[i] <= v[j]):
+            NotDominated = False
+        elif (u[i] <= u[j]) and (v[i] < v[j]):
             NotDominated = False
     if NotDominated:
         frontx.append(u[i])
