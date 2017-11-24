@@ -138,8 +138,8 @@ def main():
 
     # Automate the running Dimensions
     D_array = [2, 5, 10]
-    F_array = [HC, BC, Ackley, Discus, Griewank, Katsuura, Rastrigin, Rosenbrock, Weierstrass]
-    F_name = ['HC', 'BC', 'Ackleys', 'Discus', 'Griewank', 'Katsuura', 'Rastrigin', 'Rosenbrock', 'Weierstrass']
+    F_array = [HC, BC, Ackley, Discus, Griewank]
+    F_name = ['HC', 'BC', 'Ackleys', 'Discus', 'Griewank']
 
     # Line 155: done += PSO(C1, C2, W, D, Max_NFC, NP, funct, FunctionName, NP)
     # I do not own the following 12 lines of code, with the exception of line 155
@@ -152,12 +152,15 @@ def main():
         while (done < 3):
             D = D_array[done]
             Max_NFC = 3000 * D
-            print ('Running %s dimension:', D, '__Function: ', FunctionName)
-            done += PSO(C1, C2, W, D, Max_NFC, NP, funct, FunctionName, NP)
-            print ('Finished %s______________', FunctionName)
+            run = 0
+            print ('Running function:', FunctionName, ' on dimension: ', D)
+            while(run < 51):
+                PSO(C1, C2, W, D, Max_NFC, NP, funct, FunctionName)
+                run += 1
+            print ('Finished', FunctionName)
 
 # EZ MODE.
-def PSO(C1, C2, W, D, Max_NFC, NP, fx, fxName, save_freq):
+def PSO(C1, C2, W, D, Max_NFC, NP, fx, fxName):
     # Creates an array to hold the current generation and all of their dirty secrets.
     # Each individual (columns) consists of [position][prevVector][personalBest]. Each [set] is size D.
     gen = pop(-10, 10, NP, 3*D)
@@ -173,20 +176,6 @@ def PSO(C1, C2, W, D, Max_NFC, NP, fx, fxName, save_freq):
                 popBestFit = fitness
                 for elem in range(0, D - 1):
                     popBest = gen[individual][elem]
-            '''
-                This entire section is used for stopping the algorithm early if the optimal solution has been found.
-                if popBestFit == 0:
-                popBest = gen[individual]
-                data = "%s , %s" % (calls, popBestFit)
-                # print (data)
-                plot_data.append(data)
-                print ('RUN:____', calls)
-                ofile = open(fxName, "wb")
-                writer = csv.writer(ofile, delimiter='', quotechar='"', quoting=csv.QUOTE_ALL)
-                writer.writerow(plot_data, fxName, calls, D)
-                print ('file___done...............')
-                return 1 
-            '''
 
             # Create arrays for the complex portions of the expression.
             randV1 = np.random.rand(D)
@@ -212,18 +201,16 @@ def PSO(C1, C2, W, D, Max_NFC, NP, fx, fxName, save_freq):
 
 
         # Save the Best... dunno what info we need. Made assumption.
-        if (calls % save_freq == 0):
-            data = calls, popBestFit, D, fxName
+        if (calls % NP == 0):
+            data = calls/NP, popBestFit, D, fxName
             # print (data)
             plot_data.append(data)
 
     # I have no idea what format your want to save the thing as.
-    print ('RUN:____', calls)
     ofile = open(fxName +".csv", "wb")
     writer = csv.writer(ofile, delimiter=',', quotechar='"', quoting=csv.QUOTE_NONE, escapechar='/')
     for i in range (0, 30*D - 1):
         writer.writerow(plot_data[i])
-    print ('file___done...............')
     return 1
 
 # The Beginning
