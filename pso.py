@@ -153,14 +153,18 @@ def main():
             D = D_array[done]
             Max_NFC = 3000 * D
             run = 0
-            print ('Running function:', FunctionName, ' on dimension: ', D)
+            print 'Running function:', FunctionName, 'on dimension:', D
+            ofile = open(FunctionName + str(D) + ".csv", "wb")
+            writer = csv.writer(ofile, delimiter=',', quotechar='"', quoting=csv.QUOTE_NONE, escapechar='/')
             while(run < 51):
-                PSO(C1, C2, W, D, Max_NFC, NP, funct, FunctionName)
+                print "Run:", run
+                PSO(C1, C2, W, D, Max_NFC, NP, funct, FunctionName, writer)
                 run += 1
-            print ('Finished', FunctionName)
+            print 'Running function:', FunctionName, ' on dimension: ', D
+            done += 1
 
 # EZ MODE.
-def PSO(C1, C2, W, D, Max_NFC, NP, fx, fxName):
+def PSO(C1, C2, W, D, Max_NFC, NP, fx, fxName, writer):
     # Creates an array to hold the current generation and all of their dirty secrets.
     # Each individual (columns) consists of [position][prevVector][personalBest]. Each [set] is size D.
     gen = pop(-10, 10, NP, 3*D)
@@ -207,8 +211,6 @@ def PSO(C1, C2, W, D, Max_NFC, NP, fx, fxName):
             plot_data.append(data)
 
     # I have no idea what format your want to save the thing as.
-    ofile = open(fxName +".csv", "wb")
-    writer = csv.writer(ofile, delimiter=',', quotechar='"', quoting=csv.QUOTE_NONE, escapechar='/')
     for i in range (0, 30*D - 1):
         writer.writerow(plot_data[i])
     return 1
