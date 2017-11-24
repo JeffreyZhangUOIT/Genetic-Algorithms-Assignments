@@ -208,20 +208,21 @@ def PSO(C1, C2, W, D, Max_NFC, NP, fx, fxName, save_freq):
             # Update the position of the particle.
             for elem in range(0, D-1):
                 gen[individual][elem] += Vector[elem]
+                gen[individual][elem + D] = Vector[elem]
 
 
         # Save the Best... dunno what info we need. Made assumption.
         if (calls % save_freq == 0):
-            data = "%s , %s, %s" % (calls, popBest, popBestFit)
+            data = calls, popBestFit, D, fxName
             # print (data)
             plot_data.append(data)
 
     # I have no idea what format your want to save the thing as.
     print ('RUN:____', calls)
-    ofile = open(fxName, "wb")
-    writer = csv.writer(ofile, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL)
-    saveFile = plot_data, fxName, calls, D
-    writer.writerow(saveFile)
+    ofile = open(fxName +".csv", "wb")
+    writer = csv.writer(ofile, delimiter=',', quotechar='"', quoting=csv.QUOTE_NONE, escapechar='/')
+    for i in range (0, 30*D - 1):
+        writer.writerow(plot_data[i])
     print ('file___done...............')
     return 1
 
