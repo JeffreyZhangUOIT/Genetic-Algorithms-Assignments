@@ -125,7 +125,7 @@ def pop(min, max, Np, D):
     Vect_V = np.zeros((Np, D))
     for i in range(Np):
         for j in range(D):
-            Vect_V[i, j] = r.uniform(min, max)
+            Vect_V[i, j] = round(r.uniform(min, max), 7)
     return Vect_V
 
 # This function initializes all of the variables used during the
@@ -133,13 +133,13 @@ def pop(min, max, Np, D):
 def main():
     C1 = 2.05
     C2 = 2.05
-    W = 0.8
+    W = 0.9
     NP = 100
 
     # Automate the running Dimensions
     D_array = [2, 5, 10]
     F_array = [HC, BC, Ackley, Discus, Griewank]
-    F_name = ['HC', 'BC', 'Ackleys', 'Discus', 'Griewank']
+    F_name = ['HC', 'BC', 'Ackley', 'Discus', 'Griewank']
 
     # Line 155: done += PSO(C1, C2, W, D, Max_NFC, NP, funct, FunctionName, NP)
     # I do not own the following 12 lines of code, with the exception of line 155
@@ -169,39 +169,46 @@ def PSO(C1, C2, W, D, Max_NFC, NP, fx, fxName, writer):
     # Each individual (columns) consists of [position][prevVector][personalBest]. Each [set] is size D.
     gen = pop(-10, 10, NP, 3*D)
     popBest = np.array(D)
-    popBestFit = 10000
+    popBestFit = 99999
     plot_data = []
+    step = (0.9-0.4) / (3000*D)
 
     # Literally loops here 3000*D times. weird huh? My processor probably hates me.
     for calls in range(0, Max_NFC + 1):
+        W = W - step
         for individual in range(0, NP - 1):
-            fitness = fx(gen[individual])
-            if fitness < popBestFit:
-                popBestFit = fitness
-                for elem in range(0, D - 1):
-                    popBest = gen[individual][elem]
-
             # Create arrays for the complex portions of the expression.
             randV1 = np.random.rand(D)
             randV2 = np.random.rand(D)
-            position = np.array(D)
-            prevVec = np.array(D)
-            personalBest = np.array(D)
+            position = np.zeros(D)
+            prevVec = np.zeros(D)
+            personalBest = np.zeros(D)
 
             # Iterate through the individual and assign the values
             # To the corresponding array.
             for elem in range(0, D-1):
-                position = gen[individual][elem]
-                prevVec = gen[individual][elem + D]
-                personalBest = gen[individual][elem + (2*D)]
+                position[elem] = gen[individual][elem]
+                prevVec[elem] = gen[individual][elem + D]
+                personalBest[elem] = gen[individual][elem + (2*D)]
 
             #Surprisingly easy to code vector.
-            Vector = W * prevVec + randV1 * C1 * (personalBest - position) + randV2 * C2 * (popBest - position)
+            Vector = (W * prevVec) + (randV1 * C1 * (personalBest - position)) + (randV2 * C2 * (popBest - position))
 
             # Update the position of the particle.
             for elem in range(0, D-1):
                 gen[individual][elem] += Vector[elem]
                 gen[individual][elem + D] = Vector[elem]
+
+            if (fx(personalBest) > fx(position)):
+                for elem in range(0, D - 1):
+                    gen[individual][elem+ 2*D] = gen[individual][elem]
+                personalBest = position
+
+            fitness = fx(position)
+            if fitness < popBestFit:
+                popBestFit = fitness
+                for elem in range(0, D - 1):
+                    popBest = gen[individual][elem]
 
 
         # Save the Best... dunno what info we need. Made assumption.
