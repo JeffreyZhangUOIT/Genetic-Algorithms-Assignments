@@ -199,12 +199,11 @@ def PSO(C1, C2, W, D, Max_NFC, NP, fx, fxName, writer):
                 gen[individual][elem] += Vector[elem]
                 gen[individual][elem + D] = Vector[elem]
 
-            if (fx(personalBest) > fx(position)):
+            fitness = fx(position)
+            if (fx(personalBest) > fitness):
                 for elem in range(0, D - 1):
                     gen[individual][elem+ 2*D] = gen[individual][elem]
-                personalBest = position
 
-            fitness = fx(position)
             if fitness < popBestFit:
                 popBestFit = fitness
                 for elem in range(0, D - 1):
